@@ -374,8 +374,11 @@ def main(args):  # noqa
     if args.add:
         save(config, first(add_path(load(config), args.add)))
     elif args.remove:
+        data = load(config)
         for arg in args.remove:
-            save(config, first(remove_path(load(config), arg)))
+            data = first(remove_path(load(config), arg))
+            # save(config, first(remove_path(load(config), arg)))
+        save(config, data)
     elif args.complete:
         handle_tab_completion(
             needle=first(chain(sanitize(args.directory), [''])),
