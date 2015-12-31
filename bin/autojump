@@ -112,6 +112,9 @@ def parse_arguments():
         const=15, default=False,
         help='decrease current directory weight')
     parser.add_argument(
+        '-r', '--remove', metavar='DIRECTORY', nargs='+',
+        help='remove path')
+    parser.add_argument(
         '--complete', action="store_true", default=False,
         help='used for tab completion')
     parser.add_argument(
@@ -143,6 +146,14 @@ def add_path(data, path, weight=10):
 
     return data, Entry(path, data[path])
 
+def remove_path(data, path):
+    """
+    Remove path from database, if it exists.
+    """
+    path = os.path.abspath(unico(path))
+    if path in data:
+        del data[path]
+    return data, None
 
 def decrease_path(data, path, weight=15):
     """Decrease or zero out a path."""
@@ -362,6 +373,9 @@ def main(args):  # noqa
     # all arguments are mutually exclusive
     if args.add:
         save(config, first(add_path(load(config), args.add)))
+    elif args.remove:
+        for arg in args.remove:
+            save(config, first(remove_path(load(config), arg)))
     elif args.complete:
         handle_tab_completion(
             needle=first(chain(sanitize(args.directory), [''])),
