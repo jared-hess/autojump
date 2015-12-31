@@ -55,16 +55,16 @@ esac
 # default autojump command
 j() {
     if [[ ${1} == -* ]] && [[ ${1} != "--" ]]; then
-        autojump ${@}
+        autojump "$@"
         return
     fi
 
-    output="$(autojump ${@})"
+    output="$(autojump "$@")"
     if [[ -d "${output}" ]]; then
         echo -e "\\033[31m${output}\\033[0m"
         cd "${output}"
     else
-        echo "autojump: directory '${@}' not found"
+        echo "autojump: directory '$@' not found"
         echo "\n${output}\n"
         echo "Try \`autojump --help\` for more information."
         false
@@ -75,10 +75,10 @@ j() {
 # jump to child directory (subdirectory of current path)
 jc() {
     if [[ ${1} == -* ]] && [[ ${1} != "--" ]]; then
-        autojump ${@}
+        autojump "$@"
         return
     else
-        j $(pwd) ${@}
+        j $(pwd) "$@"
     fi
 }
 
@@ -86,11 +86,11 @@ jc() {
 # open autojump results in file browser
 jo() {
     if [[ ${1} == -* ]] && [[ ${1} != "--" ]]; then
-        autojump ${@}
+        autojump "$@"
         return
     fi
 
-    output="$(autojump ${@})"
+    output="$(autojump "$@")"
     if [[ -d "${output}" ]]; then
         case ${OSTYPE} in
             linux*)
@@ -118,9 +118,9 @@ jo() {
 # open autojump results (child directory) in file browser
 jco() {
     if [[ ${1} == -* ]] && [[ ${1} != "--" ]]; then
-        autojump ${@}
+        autojump "$@"
         return
     else
-        jo $(pwd) ${@}
+        jo $(pwd) "$@"
     fi
 }
