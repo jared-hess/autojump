@@ -153,7 +153,7 @@ def remove_path(data, path):
     path = os.path.abspath(unico(path))
     if path in data:
         del data[path]
-    return data, None
+    return data
 
 def decrease_path(data, path, weight=15):
     """Decrease or zero out a path."""
@@ -376,7 +376,7 @@ def main(args):  # noqa
     elif args.remove:
         data = load(config)
         for arg in args.remove:
-            data = first(remove_path(load(config), arg))
+            data = remove_path(load(config), arg)
         save(config, data)
     elif args.complete:
         handle_tab_completion(
