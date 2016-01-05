@@ -22,15 +22,24 @@ fi
 
 # enable tab completion
 _autojump() {
-        local cur
+	local cur
         cur=${COMP_WORDS[*]:1}
-        comps=$(autojump --complete $cur)
-        while read i; do
-            COMPREPLY=("${COMPREPLY[@]}" "${i}")
-        done <<EOF
-        $comps
-EOF
+	if [[ "$cur" == -* ]]; then
+		COMPREPLY=( $(compgen -W "$(autojump --help | grep -o -E " --?[a-z]*")" -- $cur))
+	else	
+        	comps=$(autojump --complete $cur)
+        	#mapfile -t COMPREPLY < <( $comps )	
+
+		#COMPREPLY=( $(compgen -o filenames -W "$comps" -- $cur))
+		#COMPREPLY=( "$comps" )
+		while read i; do
+                     COMPREPLY=("${COMPREPLY[@]}" "${i}")
+                done <<-HERE
+                $comps
+		HERE
+	fi
 }
+#complete -o nospace -F _autojump j
 complete -F _autojump j
 
 
