@@ -28,10 +28,6 @@ _autojump() {
 		COMPREPLY=( $(compgen -W "$(autojump --help | grep -o -E " --?[a-z]*")" -- $cur))
 	else	
         	comps=$(autojump --complete $cur)
-        	#mapfile -t COMPREPLY < <( $comps )	
-
-		#COMPREPLY=( $(compgen -o filenames -W "$comps" -- $cur))
-		#COMPREPLY=( "$comps" )
 		while read i; do
                      COMPREPLY=("${COMPREPLY[@]}" "${i}")
                 done <<-HERE
