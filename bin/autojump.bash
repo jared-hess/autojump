@@ -22,15 +22,36 @@ fi
 
 # enable tab completion
 _autojump() {
-        local cur
-        cur=${COMP_WORDS[*]:1}
-        comps=$(autojump --complete $cur)
-        while read i; do
-            COMPREPLY=("${COMPREPLY[@]}" "${i}")
-        done <<EOF
-        $comps
-EOF
+	local comps
+	local cur=${COMP_WORDS[COMP_CWORD]}
+	local prev=${COMP_WORDS[COMP_CWORD-1]}
+	if [ "$prev" == "-a" ] || [ "$prev" == "--add" ]; then
+		COMPREPLY=( $(compgen -d "$cur"))
+	elif [ "$prev" == "-r" ] || [ "$prev" == "--remove" ]; then
+		comps=$(autojump -s | grep -E "[0-9]*\.[0-9]:" | grep -o -E "/.*" | grep "^$cur")
+		if [ "$comps" ]; then	
+			while read i; do
+				COMPREPLY=("${COMPREPLY[@]}" "$(printf "%q" "${i}")")
+			done <<HERE
+			$comps
+HERE
+		
+#Leave a blank line between this comment and the above. Here be dragons.
+		fi
+	elif [[ "$cur" == -* ]]; then
+		COMPREPLY=( $(compgen -W "$(autojump --help | grep -o -E " --?[a-z]*")" -- "$cur"))
+	else	
+        	comps=$(autojump --complete "$cur")
+		while read i; do
+                     COMPREPLY=("${COMPREPLY[@]}" "${i}")
+                done <<THERE
+                $comps
+THERE
+
+#Leave a blank line between this comment and the above. Here be dragons.
+	fi
 }
+#complete -o nospace -F _autojump j
 complete -F _autojump j
 
 

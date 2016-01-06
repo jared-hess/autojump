@@ -213,9 +213,9 @@ def handle_tab_completion(needle, entries):
         print_local(tab_path)
     elif tab_index:
         get_ith_path = lambda i, iterable: last(take(i, iterable)).path
-        print_local(get_ith_path(
+        print_local("'" + get_ith_path(
             tab_index,
-            find_matches(entries, [tab_needle], check_entries=False)))
+            find_matches(entries, [tab_needle], check_entries=False)) + "'")
     elif tab_needle:
         # found partial tab completion entry
         print_tab_menu(
