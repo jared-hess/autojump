@@ -10,8 +10,11 @@ fi
 
 
 # set homebrew installation paths
-if command -v brew &>/dev/null && [[ -d "$(brew --prefix)/share/zsh/site-functions" ]]; then
-    fpath=("$(brew --prefix)/share/zsh/site-functions" ${fpath})
+if command -v brew &>/dev/null; then
+  local brew_prefix=${BREW_PREFIX:-$(brew --prefix)}
+  if [[ -d "${brew_prefix}/share/zsh/site-functions" ]]; then
+    fpath=("${brew_prefix}/share/zsh/site-functions" ${fpath})
+  fi
 fi
 
 
@@ -52,7 +55,11 @@ j() {
     setopt localoptions noautonamedirs
     local output="$(autojump ${@})"
     if [[ -d "${output}" ]]; then
-        echo -e "\\033[31m${output}\\033[0m"
+        if [ -t 1 ]; then  # if stdout is a terminal, use colors
+                echo -e "\\033[31m${output}\\033[0m"
+        else
+                echo -e "${output}"
+        fi
         cd "${output}"
     else
         echo "autojump: directory '${@}' not found"

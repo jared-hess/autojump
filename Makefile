@@ -1,7 +1,7 @@
 VERSION = $(shell grep -oE "[0-9]+\.[0-9]+\.[0-9]+" bin/autojump)
 TAGNAME = release-v$(VERSION)
 
-.PHONY: docs install uninstall lint tar test
+.PHONY: clean docs install uninstall pre-commit lint tar test
 
 install:
 	./install.py
@@ -13,8 +13,8 @@ docs:
 	pandoc -s -w man docs/manpage_header.md docs/header.md docs/body.md -o docs/autojump.1
 	pandoc -s -w markdown docs/header.md docs/install.md docs/body.md -o README.md
 
-lint:
-	@flake8 ./ --config=tox.ini
+pre-commit:
+	@tox -e pre-commit -- install -f --install-hooks
 
 release: docs
 	# Check for tag existence
@@ -38,6 +38,16 @@ tar:
 	git archive --format=tar --prefix autojump_v$(VERSION)/ $(TAGNAME) | gzip > autojump_v$(VERSION).tar.gz
 	sha1sum autojump_v$(VERSION).tar.gz
 
-test: lint
-	@find . -type f -iname "*.pyc" -delete
-	tox
+test: pre-commit
+	@tox
+
+test-xfail: pre-commit
+	@tox -- --runxfail
+
+test-fast: pre-commit
+	@tox -e py27
+
+clean:
+	@find . -type f -iname '*.py[co]' -delete
+	@find . -type d -iname '__pycache__' -delete
+	@rm -fr .tox
